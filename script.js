@@ -1,0 +1,18 @@
+const header=document.getElementById('siteHeader');
+const menuToggle=document.getElementById('menuToggle');
+const navLinks=document.getElementById('navLinks');
+const navItems=document.querySelectorAll('.nav-link');
+const revealItems=document.querySelectorAll('.reveal');
+const cards=document.querySelectorAll('.tilt');
+const form=document.getElementById('contactForm');
+const message=document.getElementById('formMessage');
+document.getElementById('year').textContent=new Date().getFullYear();
+window.addEventListener('scroll',()=>header.classList.toggle('scrolled',window.scrollY>12));
+menuToggle.addEventListener('click',()=>{const open=navLinks.classList.toggle('active');menuToggle.setAttribute('aria-expanded',String(open));});
+navItems.forEach(item=>item.addEventListener('click',()=>{navLinks.classList.remove('active');menuToggle.setAttribute('aria-expanded','false');}));
+const revealObserver=new IntersectionObserver((entries,observer)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}})},{threshold:.14});
+revealItems.forEach(item=>revealObserver.observe(item));
+const sectionObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){navItems.forEach(item=>item.classList.toggle('active',item.getAttribute('href')===`#${entry.target.id}`));}})},{rootMargin:'-35% 0px -55% 0px'});
+document.querySelectorAll('main section[id]').forEach(section=>sectionObserver.observe(section));
+cards.forEach(card=>{card.addEventListener('mousemove',event=>{if(innerWidth<=950)return;const r=card.getBoundingClientRect();const x=event.clientX-r.left;const y=event.clientY-r.top;const rx=((y/r.height)-.5)*-5;const ry=((x/r.width)-.5)*5;card.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px)`;});card.addEventListener('mouseleave',()=>card.style.transform='');});
+form.addEventListener('submit',event=>{event.preventDefault();const name=document.getElementById('name').value.trim();const email=document.getElementById('email').value.trim();const text=document.getElementById('message').value.trim();if(!name||!email||!text){message.textContent='Please complete all fields.';return;}message.textContent=`Thanks, ${name}! This demo form is working locally. No message was sent to a server.`;form.reset();});
